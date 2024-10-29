@@ -79,6 +79,8 @@ countrycode <- function(sourcevar, origin, destination, warn = TRUE, nomatch = N
     }
   }
   
+11
+  
   # Allow tibbles as conversion dictionary
   if('tbl_df' %in% class(dictionary)){ # allow tibble
     dictionary <- as.data.frame(dictionary)
