@@ -321,11 +321,31 @@ countrycode_convert <- function(# user-supplied arguments
 library(dplyr)
 # install.packages("sf")  # 安装 sf 包
 library(sf)             # 加载 sf 包
+library(readr)
 spatial_data <- st_read("/Users/huu77/Desktop/term1/0005GISS/wk4/hw/World_Countries_(Generalized)_9029012925078512962.geojson")
-gender_data <- read.csv("/Users/huu77/Desktop/term1/0005GISS/wk4/hw/gender_data.csv")
+gender_data <- read_csv("/Users/huu77/Desktop/term1/0005GISS/wk4/hw/gender_data.csv", locale = locale(encoding = "latin1"), na = "n/a")
 names(gender_data)
 names(spatial_data)
 names(gender_data) <- toupper(names(gender_data))
-head(gender_data)
+gender2019 <-  
+  gender_data %>% 
+  filter(YEAR=='2019')
+head(gender2019)
+gender2010 <-  
+  gender_data %>% 
+  filter(YEAR=='2010')
+head(gender2010)
+common_countries <- intersect(gender2019$COUNTRYISOCODE, gender2010$COUNTRYISOCODE)
+# print(common_categories)
+gender2019_common <- gender2019[gender2019$COUNTRYISOCODE %in% common_countries, ]
+gender2010_common <- gender2010[gender2010$COUNTRYISOCODE %in% common_countries, ]
+gender2019_common <- gender2019_common[order(gender2019_common$COUNTRYISOCODE), ]
+gender2010_common <- gender2010_common[order(gender2010_common$COUNTRYISOCODE), ]
+library(dplyr)
+
+gender_diff <- gender2019_common %>%
+  mutate(across(where(is.numeric), ~ . - gender2010_common[[cur_column()]]))
+# Assuming your data is in a data frame called gender_diff
+gender_diff <- gender_diff[ , !names(gender_diff) %in% "YEAR"]
 combined_data <- spatial_data %>% 
-  left_join(gender_data, by = "COUNTRY")
+  left_join(gender_diff, by = "COUNTRY")
