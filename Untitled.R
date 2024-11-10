@@ -78,8 +78,7 @@ countrycode <- function(sourcevar, origin, destination, warn = TRUE, nomatch = N
       origin_regex <- FALSE
     }
   }
-  
-11
+
   
   # Allow tibbles as conversion dictionary
   if('tbl_df' %in% class(dictionary)){ # allow tibble
